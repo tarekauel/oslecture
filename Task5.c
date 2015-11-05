@@ -39,12 +39,12 @@ int main() {
         parent = 0;
         fprintf(stderr, "C: I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
-        int fd = shm_open(SMO_NAME, O_RDONLY);
+        int fd = shm_open(SMO_NAME, O_RDONLY, 0666);
         check(fd, "shm_open");
         char* string = mmap(NULL, 100, PROT_READ, MAP_SHARED, fd, 0);
         fprintf(stderr, "C: %s", string);
     } else {
-        int fd = shm_open(SMO_NAME, O_RDWR | O_CREAT);
+        int fd = shm_open(SMO_NAME, O_RDWR | O_CREAT, 0666);
         check(fd, "shm_open");
         check(ftruncate(fd, 100), "ftruncate");
         char* string = mmap(NULL, 100, PROT_WRITE, MAP_SHARED, fd, 0);
