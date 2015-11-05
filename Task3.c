@@ -7,6 +7,13 @@
 
 int my_value = 42;
 
+void check(int error, char* command) {
+    if (error < 0) {
+        fprintf(stderr, "Error %d (parent: %d) at %s, errno: %d", error, parent, command, errno);
+        exit(error);
+    }
+}
+
 int main() {
 
     int fd[2];
@@ -14,21 +21,19 @@ int main() {
 
     char* string = malloc(100);
 
-    pipe(fd);
+    check(pipe(fd), "pipe");
 
     pid = fork();
+    check(pid, "fork");
     usleep(150);
 
-    if (pid < 0) {
-        fprintf(stderr, "An error occured\n");
-        return -1;
-    } else if (pid == 0) {
+    if (pid == 0) {
         close(fd[1]);
         my_value = 18951;
         fprintf(stderr, "I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
-        usleep(500);
+        usleep(2000);
         read(fd[0], string, sizeof(*string));
-        fprintf(stderr, "%s", string);
+        fprintf(stderr, "!: %s", string);
     } else {
         close(fd[0]);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);

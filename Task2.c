@@ -28,7 +28,7 @@ int main() {
         return -1;
     }
     usleep(150);
-    fprintf(stderr, "I'm the parent, ym pid is %d, my_value is %d\n", getpid(), my_value);
+    fprintf(stderr, "I'm the parent, my pid is %d, my_value is %d\n", getpid(), my_value);
 
     int* thread_res;
     err = pthread_join(thread, (void**) &thread_res);
