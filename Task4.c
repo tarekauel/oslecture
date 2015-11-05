@@ -58,7 +58,7 @@ int main() {
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
         check(mq_send(mqd, string, 100, 0), "mq_send");
 
-        usleep(500);
+        usleep(2000);
         bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
         fprintf(stderr, "P: %s", string);
