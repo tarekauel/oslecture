@@ -34,7 +34,7 @@ int main() {
             return -1;
         }
         ssize_t size;
-        size = mq_receive(QUEUE_NAME, string, sizeof(*string), 0);
+        size = mq_receive(queue, string, sizeof(*string), 0);
         if (size >= 0) {
             fprintf(stderr, "%s", string);
         } else {
@@ -53,7 +53,7 @@ int main() {
     } else {
         queue = mq_open(QUEUE_NAME, O_CREAT | O_WRONLY);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
-        err = mq_send(QUEUE_NAME, string, sizeof(*string), 0);
+        err = mq_send(queue, string, sizeof(*string), 0);
         if (err == -1) {
             fprintf(stderr, "Couldn't send message from parent");
         }
