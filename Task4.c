@@ -59,7 +59,7 @@ int main() {
         }
         err = mq_close(queue);
         wait(0);
-        err = mq_unlink(queue);
+        err = mq_unlink(QUEUE_NAME);
     }
 
     return 0;
