@@ -31,16 +31,16 @@ int main() {
 
     if (pid == 0) {
         parent = 0;
-        close(fd[1]);
+        check(close(fd[1]), "close");
         my_value = 18951;
         fprintf(stderr, "I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(2000);
-        read(fd[0], string, sizeof(*string));
+        check(read(fd[0], string, sizeof(*string)), "read");
         fprintf(stderr, "!: %s", string);
     } else {
-        close(fd[0]);
+        check(close(fd[0]), "close");
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
-        write(fd[1], string, sizeof(*string));
+        check(write(fd[1], string, sizeof(*string)), "write");
         wait(0);
         fprintf(stderr, "I waited for my child\n");
     }
