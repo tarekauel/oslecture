@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <mqueuq.h>
+#include <mqueue.h>
 #include <fcntl.h>
 
 #define QUEUE_NAME "/DEEDS_lab1_mq"
@@ -39,13 +39,13 @@ int main() {
             fprintf(stderr, "%s", string);
         } else {
             fprintf(stderr, "Error while receiving message");
-            err = mq_close(QUEUE_NAME);
+            err = mq_close(queue);
             if (err < 0) {
                 fprintf(stderr, "Error while closing message queue");
             }
             return -1;
         }
-        err = mq_close(QUEUE_NAME);
+        err = mq_close(queue);
         if (err < 0) {
             fprintf(stderr, "Error while closing message queue");
             return -1;
@@ -57,9 +57,9 @@ int main() {
         if (err == -1) {
             fprintf(stderr, "Couldn't send message from parent");
         }
-        err = mq_close(QUEUE_NAME);
+        err = mq_close(queue);
         wait(0);
-        err = mq_unlink(QUEUE_NAME);
+        err = mq_unlink(queue);
     }
 
     return 0;
