@@ -41,22 +41,28 @@ int main() {
         my_value = 18951;
         fprintf(stderr, "C: I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
-        mqd = mq_open(QUEUE_NAME, O_RDONLY, 0644, &attr);
+        mqd = mq_open(QUEUE_NAME, O_RDWR, 0644, &attr);
         check(mqd, "mq_open");
 
         ssize_t bytes_read;
         char* string = malloc(100);
-
         bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
         fprintf(stderr, "C: %s", string);
+        sprintf(string, "Hi, I am your child. My PID=%d and my_value=%d\n", getpid(), my_value);
+        check(mq_send(mqd, string, 100, 0), "mq_send");
+        check(mq_close(mqd), "mq_close");
     } else {
-
-        mqd = mq_open(QUEUE_NAME, O_WRONLY | O_CREAT, 0644, &attr);
+        mqd = mq_open(QUEUE_NAME, O_RDWR | O_CREAT, 0644, &attr);
         check(mqd, "mq_open");
         char* string = malloc(100);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
         check(mq_send(mqd, string, 100, 0), "mq_send");
+
+        usleep(500);
+        bytes_read = mq_receive(mqd, string, 100, 0);
+        check(bytes_read, "mq_receive");
+        fprintf(stderr, "P: %s", string);
         check(mq_close(mqd), "mq_close");
         wait(0);
         check(mq_unlink(QUEUE_NAME), "mq_unlink");
