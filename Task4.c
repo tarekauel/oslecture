@@ -50,7 +50,7 @@ int main() {
         ssize_t bytes_read;
         char* string = malloc(100);
 
-        bytes_read = mq_receive(mqd, string, 100, NULL);
+        bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
         fprintf(stderr, "%s", string);
     } else {
@@ -61,7 +61,7 @@ int main() {
         check(mqd, "mq_open");
         char* string = malloc(100);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
-        check(mq_send(mqd, string, 100, NULL), "mq_sent");
+        check(mq_send(mqd, string, 100, 0), "mq_send");
         check(mq_close(mqd), "mq_close");
         wait(0);
         check(mq_unlink(QUEUE_NAME), "mq_unlink");
