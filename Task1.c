@@ -5,17 +5,24 @@
 
 int my_value = 42;
 
+int parent = 1;
+
+void check(int error, char* command) {
+    if (error < 0) {
+        fprintf(stderr, "Error %d (parent: %d) at %s, errno: %d", error, parent, command, errno);
+        exit(error);
+    }
+}
+
 int main() {
 
     pid_t pid;
 
     pid = fork();
+    check(pid, "fork");
     usleep(150);
 
-    if (pid < 0) {
-        fprintf(stderr, "An error occured\n");
-        return -1;
-    } else if (pid == 0) {
+    if (pid == 0) {
         my_value = 18951;
         fprintf(stderr, "I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);

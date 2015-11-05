@@ -37,6 +37,7 @@ int main() {
         return -1;
     } else if (pid == 0) {
         parent = 0;
+        my_value = 18951;
         fprintf(stderr, "C: I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
         int fd = shm_open(SMO_NAME, O_RDWR, 0666);
