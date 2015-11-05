@@ -6,8 +6,8 @@ all:
 	gcc -Wall -o Task5 Task5.c -lrt
 
 clean:
-	rm Task1
-	rm Task2
-	rm Task3
-	rm Task4
-	rm Task5
+	-rm Task1
+	-rm Task2
+	-rm Task3
+	-rm Task4
+	-rm Task5
