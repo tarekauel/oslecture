@@ -41,7 +41,7 @@ int main() {
         my_value = 18951;
         fprintf(stderr, "I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
-        /*mqd = mq_open(QUEUE_NAME, O_RDONLY, 0666, attr);
+        mqd = mq_open(QUEUE_NAME, O_RDONLY, 0644, &attr);
         check(mqd, "mq_open");
 
         ssize_t bytes_read;
@@ -49,7 +49,7 @@ int main() {
 
         bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
-        fprintf(stderr, "%s", string);*/
+        fprintf(stderr, "%s", string);
     } else {
 
         mqd = mq_open(QUEUE_NAME, O_WRONLY | O_CREAT, 0644, &attr);
