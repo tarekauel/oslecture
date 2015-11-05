@@ -13,13 +13,6 @@ int my_value = 42;
 
 int parent = 1;
 
-struct mq_attr {
-    long mq_flags;
-    long mq_maxmsg;
-    long mq_msgsize;
-    long mq_curmsgs;
-};
-
 void check(int error, char* command) {
     if (error < 0) {
         fprintf(stderr, "Error %d (parent: %d) at %s, errno: %d\n", error, parent, command, errno);
