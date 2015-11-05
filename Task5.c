@@ -45,7 +45,6 @@ int main() {
         char* string = mmap(NULL, 100, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
         fprintf(stderr, "C: %s", string);
         sprintf(string, "Hi, I am your child. My PID=%d and my_value=%d\n", getpid(), my_value);
-        free(string);
     } else {
         int fd = shm_open(SMO_NAME, O_RDWR | O_CREAT, 0666);
         check(fd, "shm_open");
@@ -56,7 +55,6 @@ int main() {
         usleep(2000);
         fprintf(stderr, "P: %s", string);
         check(munmap(string, 100), "munmap");
-        free(string);
         wait(0);
         check(shm_unlink(SMO_NAME), "shm_unlink");
     }
