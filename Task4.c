@@ -47,7 +47,7 @@ int main() {
         check(bytes_read, "mq_receive");
         fprintf(stderr, "%s", string);
     } else {
-        mqd = mq_open(QUEUE_NAME, O_WRONLY | O_CREAT);
+        mqd = mq_open(QUEUE_NAME, O_WRONLY | O_CREAT, 0666, NULL);
         check(mqd, "mq_open");
         char* string = malloc(100);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
