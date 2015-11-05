@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define SMO_NAME "/DEES_shma_abtc"
+#define SMO_NAME "/DEEDS_lab1_shm"
 
 int my_value = 42;
 
@@ -39,17 +39,20 @@ int main() {
         parent = 0;
         fprintf(stderr, "C: I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
-        int fd = shm_open(SMO_NAME, O_RDONLY, 0666);
+        int fd = shm_open(SMO_NAME, O_RDWR, 0666);
         check(fd, "shm_open");
-        char* string = mmap(NULL, 100, PROT_READ, MAP_SHARED, fd, 0);
+        char* string = mmap(NULL, 100, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
         fprintf(stderr, "C: %s", string);
+        sprintf(string, "Hi, I am your child. My PID=%d and my_value=%d\n", getpid(), my_value);
     } else {
         int fd = shm_open(SMO_NAME, O_RDWR | O_CREAT, 0666);
         check(fd, "shm_open");
         check(ftruncate(fd, 100), "ftruncate");
-        char* string = mmap(NULL, 100, PROT_WRITE, MAP_SHARED, fd, 0);
+        char* string = mmap(NULL, 100, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
         check(string == MAP_FAILED, "mmap");
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
+        usleep(2000);
+        fprintf(stderr, "P: %s", string);
         check(munmap(string, 100), "munmap");
         wait(0);
         check(shm_unlink(SMO_NAME), "shm_unlink");
