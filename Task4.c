@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #define QUEUE_NAME "/DEEDS_lab1_mq"
 
