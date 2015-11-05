@@ -10,57 +10,50 @@
 
 int my_value = 42;
 
+int parent = 1;
+
+void check(int error, char* command) {
+    if (error < 0) {
+        fprintf(stderr, "Error %d (parent: %d) at %s, errno: %d", error, parent, command, errno);
+        if (parent) {
+            mq_unlink(QUEUE_NAME);
+        }
+        exit(error);
+    }
+}
+
 int main() {
 
-    mqd_t queue;
     pid_t pid;
-
-    char* string = malloc(100);
+    mqd_t mqd;
 
     pid = fork();
+    check(pid, "fork");
     usleep(150);
 
-    int err;
-
-    if (pid < 0) {
-        fprintf(stderr, "An error occured\n");
-        return -1;
-    } else if (pid == 0) {
+    if (pid == 0) {
+        parent = 0;
+        my_value = 18951;
         fprintf(stderr, "I'm the child, my pid is %d, my_value is %d\n", getpid(), my_value);
         usleep(500);
-        queue = mq_open(QUEUE_NAME, O_RDONLY);
-        if (queue == -1) {
-            fprintf(stderr, "Child couldn't connect to mq.");
-            return -1;
-        }
-        ssize_t size;
-        size = mq_receive(queue, string, sizeof(*string), 0);
-        if (size >= 0) {
-            fprintf(stderr, "%s", string);
-        } else {
-            fprintf(stderr, "Error while receiving message");
-            err = mq_close(queue);
-            if (err < 0) {
-                fprintf(stderr, "Error while closing message queue");
-            }
-            return -1;
-        }
-        err = mq_close(queue);
-        if (err < 0) {
-            fprintf(stderr, "Error while closing message queue");
-            return -1;
-        }
-    } else {
-        queue = mq_open(QUEUE_NAME, O_CREAT | O_WRONLY);
-        sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
-        err = mq_send(queue, string, sizeof(*string), 0);
-        if (err == -1) {
-            fprintf(stderr, "Couldn't send message from parent");
-        }
-        err = mq_close(queue);
-        wait(0);
-        err = mq_unlink(QUEUE_NAME);
-    }
+        mqd = mq_open(QUEUE_NAME, O_RDONLY);
+        check(mqd, "mq_open");
 
+        ssize_t bytes_read;
+        char* string = malloc(100);
+
+        bytes_read = mq_receive(mqd, string, 100, 0);
+        check(bytes_read, "mq_receive");
+        fprintf(stderr, "%s", string);
+    } else {
+        mqd = mq_open(QUEUE_NAME, O_WRONLY);
+        check(mqd, "mq_open");
+        char* string = malloc(100);
+        sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
+        check(mq_sent(mqd, string, 100, 0), "mq_sent");
+        check(mq_close(mqd), "mq_close");
+        wait(0);
+        check(mq_unlink(QUEUE_NAME), "mq_unlink");
+    }
     return 0;
 }
