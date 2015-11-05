@@ -27,6 +27,8 @@ int main() {
 
     pid_t pid;
     mqd_t mqd;
+    ssize_t bytes_read;
+    char* string = malloc(100);
 
     pid = fork();
     check(pid, "fork");
@@ -44,8 +46,6 @@ int main() {
         mqd = mq_open(QUEUE_NAME, O_RDWR, 0644, &attr);
         check(mqd, "mq_open");
 
-        ssize_t bytes_read;
-        char* string = malloc(100);
         bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
         fprintf(stderr, "C: %s", string);
@@ -55,7 +55,6 @@ int main() {
     } else {
         mqd = mq_open(QUEUE_NAME, O_RDWR | O_CREAT, 0644, &attr);
         check(mqd, "mq_open");
-        char* string = malloc(100);
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
         check(mq_send(mqd, string, 100, 0), "mq_send");
 
