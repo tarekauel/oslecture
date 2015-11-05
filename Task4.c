@@ -51,6 +51,9 @@ int main() {
         fprintf(stderr, "C: %s", string);
         sprintf(string, "Hi, I am your child. My PID=%d and my_value=%d\n", getpid(), my_value);
         check(mq_send(mqd, string, 100, 0), "mq_send");
+
+        free(string);
+
         check(mq_close(mqd), "mq_close");
     } else {
         mqd = mq_open(QUEUE_NAME, O_RDWR | O_CREAT, 0644, &attr);
@@ -61,6 +64,7 @@ int main() {
         bytes_read = mq_receive(mqd, string, 100, 0);
         check(bytes_read, "mq_receive");
         fprintf(stderr, "P: %s", string);
+        free(string);
         check(mq_close(mqd), "mq_close");
         wait(0);
         check(mq_unlink(QUEUE_NAME), "mq_unlink");

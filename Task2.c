@@ -8,6 +8,13 @@
 
 int my_value = 42;
 
+void check(int error, char* command) {
+    if (error < 0) {
+        fprintf(stderr, "Error %d at %s, errno: %d", error, command, errno);
+        exit(error);
+    }
+}
+
 void* child_execution(void* args) {
     usleep(150);
     my_value = 18951;
@@ -22,20 +29,12 @@ int main() {
 
     pthread_t thread;
 
-    int err = pthread_create(&thread, NULL, child_execution, NULL);
-    if (err != 0) {
-        fprintf(stderr, "An error occured\n");
-        return -1;
-    }
+    check(pthread_create(&thread, NULL, child_execution, NULL), "pthread_create");
     usleep(150);
     fprintf(stderr, "I'm the parent, my pid is %d, my_value is %d\n", getpid(), my_value);
 
     int* thread_res;
-    err = pthread_join(thread, (void**) &thread_res);
-    if (err != 0 || *thread_res != 0) {
-        fprintf(stderr, "An error occured\n");
-        return -1;
-    }
+    check(pthread_join(thread, (void**) &thread_res), "pthread_join");
     fprintf(stderr, "I waited for my child\n");
     return 0;
 }

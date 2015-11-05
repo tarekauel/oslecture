@@ -37,10 +37,12 @@ int main() {
         usleep(2000);
         check(read(fd[0], string, 100), "read");
         fprintf(stderr, "%s", string);
+        free(string);
     } else {
         check(close(fd[0]), "close");
         sprintf(string, "Hi, I am your parent. My PID=%d and my_value=%d\n", getpid(), my_value);
         check(write(fd[1], string, 100), "write");
+        free(string);
         wait(0);
         fprintf(stderr, "I waited for my child\n");
     }
